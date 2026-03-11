@@ -17,7 +17,6 @@ class UserService:
 
         return result.scalar_one_or_none()
 
-
     async def create_user(self, user_id: int, username: str | None):
 
         user = User(
@@ -46,7 +45,7 @@ class UserService:
 
         stmt = insert(User).values(
             id=user_id,
-            username=username
+            username=username   
         ).on_conflict_do_nothing(
             index_elements=[User.id]
         )
