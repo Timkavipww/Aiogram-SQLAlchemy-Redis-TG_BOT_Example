@@ -3,6 +3,9 @@ import os
 class Config:
     BOT_TOKEN: str = os.getenv("BOT_TOKEN")
     DATABASE_URL: str = os.getenv("DATABASE_URL")
+    REDIS_HOST: str = os.getenv("REDIS_HOST")
+    REDIS_PORT: str = os.getenv("REDIS_PORT")
+
     ADMIN_IDS: list = []
  
     @classmethod
@@ -21,9 +24,16 @@ class Config:
             raise ValueError("BOT_TOKEN не найден в .env файле")
         if not cls.DATABASE_URL:
             raise ValueError("DATABASE_URL не найден в .env файле")
+        if not cls.REDIS_PORT:
+            raise ValueError("RED не найден в .env файле")
+        if not cls.REDIS_HOST:
+            raise ValueError("DATABASE_URL не найден в .env файле")
         
         cls.ADMIN_IDS = cls._parse_admin_ids()
         
         if not cls.ADMIN_IDS:
             print("⚠️ ADMIN_IDS не установлен или пуст. Админские функции будут недоступны.")
 
+
+config = Config()
+config.validate_config()

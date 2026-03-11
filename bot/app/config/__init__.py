@@ -1,7 +1,6 @@
 from .logging_config import logger, setup_logger
-from .settings import Config
+from .settings import config
 
 setup_logger()
-config = Config()
-config.validate_config()
+
 __all__ = ["logger", "config"]
