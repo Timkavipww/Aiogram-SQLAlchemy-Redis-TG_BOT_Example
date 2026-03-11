@@ -26,8 +26,6 @@ class EnsureUserMiddleware(BaseMiddleware):
         elif isinstance(event, CallbackQuery):
             user = event.from_user
 
-            
-        logger.info(user)
         if user:
             await user_service.ensure_user(
                 user_id=user.id,
