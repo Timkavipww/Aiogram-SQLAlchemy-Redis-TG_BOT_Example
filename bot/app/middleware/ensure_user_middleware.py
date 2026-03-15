@@ -5,31 +5,19 @@ from app.services.user_service import UserService
 from app.config import logger
 
 class EnsureUserMiddleware(BaseMiddleware):
+    async def __call__(self, handler, event: Update, data):
+        if event.message:
+            session = data.get("session")
+            if session is None:
+                logger.warning("[EnsureUserMiddleware] Нет session в данных")
+                return await handler(event, data)
 
-    async def __call__(
-        self,
-        handler: Callable,
-        event: TelegramObject,
-        data: Dict[str, Any],
-    ) -> Any:
-
-        user_service: UserService | None = data.get("user_service")
-
-        if user_service is None:
-            return await handler(event, data)
-
-        user = None
-
-        if isinstance(event, Message):
-            user = event.from_user
-
-        elif isinstance(event, CallbackQuery):
-            user = event.from_user
-
-        if user:
-            await user_service.ensure_user(
-                user_id=user.id,
-                username=user.username
-            )
+            service = UserService(session)
+            user_id = event.message.from_user.id
+            username = event.message.from_user.username
+            user = await service.get_by_id(user_id)
+            if not user:
+                await service.create(id=user_id, username=username)
+                logger.info(f"[EnsureUserMiddleware] Создан новый пользователь: {user_id}")
 
         return await handler(event, data)
